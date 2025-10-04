@@ -19,14 +19,15 @@ export default function Dashboard() {
   }, [cameras]);
 
   const handleAddCamera = (fileUrl) => {
-    const newCam = {
-      id: Date.now(),
-      src: fileUrl,
-      name: `Camera ${cameras.length + 1}`,
-      status: "online",
-    };
-    setCameras([...cameras, newCam]);
+  const newCam = {
+    id: Date.now(),
+    src: fileUrl,
+    name: `Camera ${cameras.length + 1}`,
+    status: Math.random() > 0.2 ? "online" : "offline", // 80% chance online
   };
+  setCameras([...cameras, newCam]);
+};
+
 
   return (
     <div>

@@ -1,12 +1,22 @@
-export const CameraFeed = ({ src, name }) => (
-  <div className="bg-gray-800 rounded-xl p-3 shadow-lg hover:shadow-2xl transition-all">
-    <h3 className="font-semibold mb-2">{name}</h3>
-    {src ? (
-      <video src={src} controls autoPlay loop muted className="w-full rounded-lg" />
-    ) : (
-      <div className="aspect-video bg-gray-700 flex items-center justify-center rounded-lg">
-        <span className="text-gray-400">No camera feed</span>
+export const CameraFeed = ({ src, name, status }) => {
+  const statusColor = status === "online" ? "bg-green-500" : "bg-red-500";
+
+  return (
+    <div className="bg-gray-800 rounded-xl p-3 shadow-lg hover:shadow-2xl transition-all">
+      <div className="flex justify-between items-center mb-2">
+        <h3 className="font-semibold">{name}</h3>
+        <span className={`px-2 py-1 rounded-full text-xs ${statusColor}`}>
+          {status}
+        </span>
       </div>
-    )}
-  </div>
-);
+
+      {src ? (
+        <video src={src} controls autoPlay loop muted className="w-full rounded-lg" />
+      ) : (
+        <div className="aspect-video bg-gray-700 flex items-center justify-center rounded-lg">
+          <span className="text-gray-400">No camera feed</span>
+        </div>
+      )}
+    </div>
+  );
+};
