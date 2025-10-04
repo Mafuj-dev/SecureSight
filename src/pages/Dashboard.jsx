@@ -26,7 +26,14 @@ export default function Dashboard() {
     status: Math.random() > 0.2 ? "online" : "offline", // 80% chance online
   };
   setCameras([...cameras, newCam]);
+  };
+
+  const handleDeleteCamera = (id) => {
+  const updated = cameras.filter((cam) => cam.id !== id);
+  setCameras(updated);
 };
+
+
 
 
   return (
@@ -47,8 +54,15 @@ export default function Dashboard() {
           </div>
         ) : (
           cameras.map((cam) => (
-            <CameraFeed key={cam.id} src={cam.src} name={cam.name} />
+            <CameraFeed
+                key={cam.id}
+                src={cam.src}
+                name={cam.name}
+                status={cam.status}
+                onDelete={() => handleDeleteCamera(cam.id)}
+            />
           ))
+
         )}
 
         <AlertCard title="Weapon Detected" time="12:35 PM" level="High" />
