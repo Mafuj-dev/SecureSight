@@ -14,5 +14,9 @@ cd .\backend\
 uvicorn app.main:app --reload
 
 another for frontend
+npm install (for first time)
+npm install firebase
+
+
 cd .\frontend\
 npm run dev
