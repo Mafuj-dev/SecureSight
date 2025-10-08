@@ -10,13 +10,34 @@ export const AddCameraModal = ({ onAdd, onClose }) => {
     if (selected) setFile(URL.createObjectURL(selected));
   };
 
-  const handleAdd = () => {
-    const src = mode === "file" ? file : url;
-    if (src) {
-      onAdd(src);
-      onClose();
+  const handleAdd = async () => {
+  if (mode === "file" && file) {
+    const formData = new FormData();
+    formData.append("file", e.target.files[0]);
+
+    try {
+      const res = await fetch("http://127.0.0.1:8000/upload_video/", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        onAdd(`http://127.0.0.1:8000/uploads/${data.filename}`, "file", data.detections);
+        onClose();
+      } else {
+        alert("Upload failed: " + data.error);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Failed to upload video.");
     }
-  };
+  } else if (mode === "url" && url) {
+    onAdd(url, "url", []);
+    onClose();
+  }
+};
+
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50">
@@ -25,27 +46,21 @@ export const AddCameraModal = ({ onAdd, onClose }) => {
           Add Camera Feed
         </h2>
 
-        {/* Mode Toggle */}
         <div className="flex justify-center space-x-4 mb-4">
           <button
             onClick={() => setMode("file")}
-            className={`px-3 py-1 rounded-lg ${
-              mode === "file" ? "bg-primary" : "bg-gray-700"
-            }`}
+            className={`px-3 py-1 rounded-lg ${mode === "file" ? "bg-primary" : "bg-gray-700"}`}
           >
             Upload File
           </button>
           <button
             onClick={() => setMode("url")}
-            className={`px-3 py-1 rounded-lg ${
-              mode === "url" ? "bg-primary" : "bg-gray-700"
-            }`}
+            className={`px-3 py-1 rounded-lg ${mode === "url" ? "bg-primary" : "bg-gray-700"}`}
           >
             Stream URL
           </button>
         </div>
 
-        {/* Input Fields */}
         {mode === "file" ? (
           <>
             <input
@@ -54,9 +69,7 @@ export const AddCameraModal = ({ onAdd, onClose }) => {
               onChange={handleFileChange}
               className="block w-full text-sm text-gray-300 mb-4"
             />
-            {file && (
-              <video src={file} className="w-full rounded-lg mb-3" controls />
-            )}
+            {file && <video src={file} className="w-full rounded-lg mb-3" controls />}
           </>
         ) : (
           <input
@@ -69,10 +82,7 @@ export const AddCameraModal = ({ onAdd, onClose }) => {
         )}
 
         <div className="flex justify-end space-x-3">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 rounded-lg bg-gray-600 hover:bg-gray-700"
-          >
+          <button onClick={onClose} className="px-4 py-2 rounded-lg bg-gray-600 hover:bg-gray-700">
             Cancel
           </button>
           <button

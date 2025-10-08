@@ -17,6 +17,7 @@ another for frontend
 npm install (for first time)
 npm install firebase
 npm install react-router-dom
+npm install axios
 
 
 cd .\frontend\

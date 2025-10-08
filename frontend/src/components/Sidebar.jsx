@@ -4,8 +4,7 @@ import { Video, LayoutDashboard } from "lucide-react"; // optional icons
 export const Sidebar = ({ setActivePage, activePage }) => {
   const menuItems = [
     { id: "dashboard", label: "Dashboard", icon: <LayoutDashboard size={18} /> },
-    { id: "video-detection", label: "Video Detection", icon: <Video size={18} /> }, // ✅ new item
-  ];
+    ];
 
   return (
     <div className="w-64 bg-gray-950 flex flex-col p-4 space-y-3 shadow-lg">

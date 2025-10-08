@@ -4,7 +4,6 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { Sidebar } from "./components/Sidebar";
 import { Navbar } from "./components/Navbar";
 import Dashboard from "./pages/Dashboard";
-import VideoDetection from "./pages/VideoDetection";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 import ForgotPassword from "./components/ForgotPassword";
@@ -47,6 +46,7 @@ export default function App() {
             <Navbar onLogout={() => signOut(auth)} userEmail={user?.email || ""} />
             <main className="flex-1 p-6 overflow-y-auto bg-gray-800 rounded-tl-2xl shadow-inner transition-all">
               <Routes>
+                {/* Dashboard is now the main page */}
                 <Route
                   path="/"
                   element={
@@ -55,14 +55,7 @@ export default function App() {
                     </PrivateRoute>
                   }
                 />
-                <Route
-                  path="/video-detection"
-                  element={
-                    <PrivateRoute>
-                      <VideoDetection />
-                    </PrivateRoute>
-                  }
-                />
+                {/* Redirect all unknown routes to dashboard */}
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </main>

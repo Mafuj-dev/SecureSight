@@ -4,86 +4,126 @@ import { CameraFeed } from "../components/CameraFeed";
 import { AlertCard } from "../components/AlertCard";
 import { AddCameraModal } from "../components/AddCameraModal";
 import { useAuth } from "../context/AuthContext";
+import axios from "axios";
 
 export default function Dashboard() {
   const [cameras, setCameras] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const { user } = useAuth(); // removed logout since it’s not used here
+  const { user } = useAuth();
   const navigate = useNavigate();
 
-  // Redirect to login if not authenticated
+  const BACKEND_URL = "http://127.0.0.1:8000";
+
   useEffect(() => {
     if (!user) navigate("/");
   }, [user, navigate]);
 
-  // Load cameras from localStorage on startup
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem("cameras");
-      if (saved) setCameras(JSON.parse(saved));
-    } catch (error) {
-      console.error("Failed to load cameras:", error);
-    }
+    const saved = localStorage.getItem("cameras");
+    if (saved) setCameras(JSON.parse(saved));
   }, []);
 
-  // Save cameras to localStorage whenever updated
   useEffect(() => {
     localStorage.setItem("cameras", JSON.stringify(cameras));
   }, [cameras]);
 
-  const handleAddCamera = (fileUrl) => {
-    const newCam = {
-      id: Date.now(),
-      src: fileUrl,
-      name: `Camera ${cameras.length + 1}`,
-      status: Math.random() > 0.2 ? "online" : "offline", // 80% online
-    };
-    setCameras((prev) => [...prev, newCam]);
-  };
+  const handleAddCamera = async (src, mode) => {
+  const cameraId = `cam_${Date.now()}`;
 
-  const handleDeleteCamera = (id) => {
-    if (window.confirm("Are you sure you want to delete this camera?")) {
-      setCameras((prev) => prev.filter((cam) => cam.id !== id));
+  if (mode === "file") {
+    try {
+      const fileBlob = await fetch(src).then((r) => r.blob());
+      const formData = new FormData();
+      formData.append("file", fileBlob, `video_${Date.now()}.mp4`);
+
+      const res = await axios.post(`${BACKEND_URL}/upload_video/`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      const data = res.data;
+
+      const newCam = {
+        id: cameraId,
+        src: data.url, // backend URL (public video)
+        name: `Video ${cameras.length + 1}`,
+        type: "video",
+        detections: data.detections || [],
+      };
+
+      setCameras((prev) => [...prev, newCam]);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to upload video");
+    }
+  } else if (mode === "url") {
+    try {
+      await axios.post(`${BACKEND_URL}/camera/add/${cameraId}`, null, {
+        params: { url: src },
+      });
+
+      const newCam = {
+        id: cameraId,
+        src: `${BACKEND_URL}/camera/stream/${cameraId}`,
+        name: `Camera ${cameras.length + 1}`,
+        type: "stream",
+        detections: [],
+      };
+      setCameras((prev) => [...prev, newCam]);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to add camera stream");
+    }
+  }
+};
+
+
+  const handleDeleteCamera = async (cam) => {
+    if (!window.confirm("Are you sure you want to delete this camera?")) return;
+
+    try {
+      if (cam.type === "stream") {
+        await axios.post(`${BACKEND_URL}/camera/remove/${cam.id}`);
+      }
+      setCameras(prev => prev.filter(c => c.id !== cam.id));
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete camera");
     }
   };
 
   return (
     <div className="p-6 min-h-screen bg-gray-50">
-      {/* Top bar */}
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-gray-800">Dashboard</h2>
         <button
           onClick={() => setShowModal(true)}
           className="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded-lg font-semibold"
         >
-          + Add Camera
+          + Add Camera / Video
         </button>
       </div>
 
-      {/* Cameras Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-10">
         {cameras.length === 0 ? (
           <div className="col-span-full flex justify-center text-gray-400 italic">
             No cameras added yet
           </div>
         ) : (
-          cameras.map((cam) => (
+          cameras.map(cam => (
             <CameraFeed
               key={cam.id}
               src={cam.src}
               name={cam.name}
-              status={cam.status}
-              onDelete={() => handleDeleteCamera(cam.id)}
+              type={cam.type}
+              detections={cam.detections}
+              onDelete={() => handleDeleteCamera(cam)}
             />
           ))
         )}
       </div>
 
-      {/* Alerts Section */}
       <div>
-        <h3 className="text-xl font-semibold text-gray-700 mb-3">
-          Recent Alerts
-        </h3>
+        <h3 className="text-xl font-semibold text-gray-700 mb-3">Recent Alerts</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           <AlertCard title="Weapon Detected" time="12:35 PM" level="High" />
           <AlertCard title="Crowd Density High" time="12:50 PM" level="Medium" />
@@ -91,10 +131,9 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Modal for adding camera */}
       {showModal && (
         <AddCameraModal
-          onAdd={handleAddCamera}
+          onAdd={(src, mode) => handleAddCamera(src, mode)}
           onClose={() => setShowModal(false)}
         />
       )}
