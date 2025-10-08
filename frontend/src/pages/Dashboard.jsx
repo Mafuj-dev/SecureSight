@@ -8,7 +8,7 @@ import { useAuth } from "../context/AuthContext";
 export default function Dashboard() {
   const [cameras, setCameras] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const { user, logout } = useAuth();
+  const { user } = useAuth(); // removed logout since it’s not used here
   const navigate = useNavigate();
 
   // Redirect to login if not authenticated
@@ -51,26 +51,13 @@ export default function Dashboard() {
     <div className="p-6 min-h-screen bg-gray-50">
       {/* Top bar */}
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">
-          Welcome, {user?.email || "User"}
-        </h2>
-        <div className="flex gap-3">
-          <button
-            onClick={() => setShowModal(true)}
-            className="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded-lg font-semibold"
-          >
-            + Add Camera
-          </button>
-          <button
-            onClick={() => {
-              logout();
-              navigate("/");
-            }}
-            className="bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded-lg font-semibold"
-          >
-            Logout
-          </button>
-        </div>
+        <h2 className="text-2xl font-bold text-gray-800">Dashboard</h2>
+        <button
+          onClick={() => setShowModal(true)}
+          className="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded-lg font-semibold"
+        >
+          + Add Camera
+        </button>
       </div>
 
       {/* Cameras Grid */}

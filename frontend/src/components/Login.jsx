@@ -5,12 +5,15 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
 } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
 
-export default function Login({ onSwitchMode }) {
+export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
 
   // Email login
   const handleLogin = async (e) => {
@@ -19,6 +22,7 @@ export default function Login({ onSwitchMode }) {
     setLoading(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
+      navigate("/dashboard"); // redirect to dashboard on login
     } catch (err) {
       setError(err.message);
     } finally {
@@ -32,6 +36,7 @@ export default function Login({ onSwitchMode }) {
     setError("");
     try {
       await signInWithPopup(auth, provider);
+      navigate("/dashboard"); // redirect after Google login
     } catch (err) {
       setError(err.message);
     }
@@ -92,15 +97,17 @@ export default function Login({ onSwitchMode }) {
       <div className="mt-6 text-center text-sm text-gray-400">
         Don't have an account?{" "}
         <button
-          onClick={() => onSwitchMode("signup")}
-          className="text-blue-400 underline"
+          type="button"
+          onClick={() => navigate("/signup")}
+          className="text-blue-400 underline hover:text-blue-500"
         >
           Sign up
         </button>
         <br />
         <button
-          onClick={() => onSwitchMode("reset")}
-          className="text-gray-400 underline mt-2"
+          type="button"
+          onClick={() => navigate("/forgot-password")}
+          className="text-blue-400 underline hover:text-blue-500 mt-2"
         >
           Forgot Password?
         </button>
