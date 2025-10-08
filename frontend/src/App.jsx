@@ -1,20 +1,20 @@
 // src/App.jsx
 import React, { useEffect, useState } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { Sidebar } from "./components/Sidebar";
 import { Navbar } from "./components/Navbar";
 import Dashboard from "./pages/Dashboard";
 import VideoDetection from "./pages/VideoDetection";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
+import Login from "./components/Login";
+import Signup from "./components/Signup";
+import ResetPassword from "./components/ResetPassword";
+import { AuthProvider } from "./context/AuthContext";
 import { auth } from "./firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 
 export default function App() {
-  const [activePage, setActivePage] = useState("dashboard");
   const [user, setUser] = useState(undefined); // undefined = loading, null = not logged in
-  const [showSignup, setShowSignup] = useState(false);
 
-  // Track Firebase auth state
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser || null);
@@ -22,19 +22,7 @@ export default function App() {
     return () => unsubscribe();
   }, []);
 
-  // Page rendering logic
-  const renderPage = () => {
-    switch (activePage) {
-      case "dashboard":
-        return <Dashboard />;
-      case "video-detection":
-        return <VideoDetection />;
-      default:
-        return <Dashboard />;
-    }
-  };
-
-  // Show loading while checking login
+  // Loading state
   if (user === undefined) {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-900 text-white">
@@ -43,34 +31,36 @@ export default function App() {
     );
   }
 
-  // If not logged in, show login/signup pages
+  // Not logged in → show login/signup/reset routes
   if (!user) {
     return (
       <div className="bg-gray-900 text-white min-h-screen flex flex-col items-center justify-center">
-        {showSignup ? <Signup /> : <Login />}
-        <button
-          onClick={() => setShowSignup(!showSignup)}
-          className="mt-4 text-blue-400 underline"
-        >
-          {showSignup ? "Back to Login" : "Create an account"}
-        </button>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/reset" element={<ResetPassword />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </div>
     );
   }
 
-  // If logged in, show main SecureSight dashboard
+  // Logged in → main dashboard
   return (
-    <div className="flex min-h-screen bg-gray-900 text-white">
-      <Sidebar setActivePage={setActivePage} activePage={activePage} />
-      <div className="flex-1 flex flex-col">
-        <Navbar
-          onLogout={() => signOut(auth)}
-          userEmail={user?.email || ""}
-        />
-        <main className="flex-1 p-6 overflow-y-auto bg-gray-800 rounded-tl-2xl shadow-inner transition-all">
-          {renderPage()}
-        </main>
+    <AuthProvider>
+      <div className="flex min-h-screen bg-gray-900 text-white">
+        <Sidebar />
+        <div className="flex-1 flex flex-col">
+          <Navbar onLogout={() => signOut(auth)} userEmail={user?.email || ""} />
+          <main className="flex-1 p-6 overflow-y-auto bg-gray-800 rounded-tl-2xl shadow-inner transition-all">
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/video-detection" element={<VideoDetection />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </main>
+        </div>
       </div>
-    </div>
+    </AuthProvider>
   );
 }

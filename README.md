@@ -16,6 +16,7 @@ uvicorn app.main:app --reload
 another for frontend
 npm install (for first time)
 npm install firebase
+npm install react-router-dom
 
 
 cd .\frontend\
