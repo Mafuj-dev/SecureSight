@@ -1,21 +1,17 @@
-// src/firebase.js
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getAuth } from "firebase/auth";  // ✅ add this import
+import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBgzjo6Rg9vsWFF5FTyXxz64jr74zaQ1pY",
-  authDomain: "sight-2094c.firebaseapp.com",
-  projectId: "sight-2094c",
-  storageBucket: "sight-2094c.firebasestorage.app",
-  messagingSenderId: "744521349979",
-  appId: "1:744521349979:web:3503e8af259944eaaff87e",
-  measurementId: "G-ZV5XZ0JKLR"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
-
-// ✅ Initialize Firebase Authentication and export it
 export const auth = getAuth(app);
