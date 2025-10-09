@@ -21,7 +21,7 @@ export const Sidebar = ({ isExpanded: propExpanded, setIsExpanded: propSetExpand
 
   return (
     <div
-      className="bg-gray-800 text-white shadow-lg z-40 flex flex-col fixed top-16 left-0 bottom-0 transition-all duration-300 overflow-hidden"
+      className="bg-gray-800 text-white shadow-left-lg z-40 flex flex-col fixed top-16 left-0 bottom-0 transition-all duration-300 overflow-hidden"
       style={{ width: isExpanded ? 160 : 50 }}
       onMouseEnter={() => setIsExpanded(true)}
       onMouseLeave={() => setIsExpanded(false)}

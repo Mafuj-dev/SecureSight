@@ -19,8 +19,8 @@ export default function Analytics({ sidebarWidth = 60, navbarHeight = 64 }) {
     <div
       className="flex-1 overflow-auto bg-gray-800 text-white transition-all duration-300"
       style={{
-        marginLeft: sidebarWidth,
-        paddingTop: navbarHeight,
+        marginLeft: sidebarWidth-10,
+        paddingTop: navbarHeight+10,
         paddingRight: 24,
         paddingLeft: 24,
       }}
