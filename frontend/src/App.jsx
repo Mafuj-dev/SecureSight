@@ -5,6 +5,7 @@ import { Sidebar } from "./components/Sidebar";
 import { Navbar } from "./components/Navbar";
 import LiveView from "./pages/LiveView";
 import Analytics from "./pages/Analytics";
+import Security from "./pages/Security";
 import Alerts from "./pages/Alerts";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
@@ -107,6 +108,15 @@ export default function App() {
                   element={
                     <PrivateRoute>
                       <Alerts sidebarWidth={sidebarWidth} navbarHeight={navbarHeight} />
+                    </PrivateRoute>
+                  }
+                />
+
+                <Route
+                  path="/security"
+                  element={
+                    <PrivateRoute>
+                      <Security sidebarWidth={sidebarWidth} navbarHeight={navbarHeight} />
                     </PrivateRoute>
                   }
                 />
