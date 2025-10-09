@@ -15,18 +15,15 @@ export default function LiveView() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  // Redirect if not logged in
   useEffect(() => {
     if (!user) navigate("/");
   }, [user, navigate]);
 
-  // Load cameras from localStorage
   useEffect(() => {
     const saved = localStorage.getItem("cameras");
     if (saved) setCameras(JSON.parse(saved));
   }, []);
 
-  // Save cameras to localStorage
   useEffect(() => {
     localStorage.setItem("cameras", JSON.stringify(cameras));
   }, [cameras]);
@@ -54,7 +51,7 @@ export default function LiveView() {
   // Sidebar and alert widths
   const sidebarWidth = sidebarExpanded ? 160 : 60;
   const alertWidth = alertCollapsed ? 64 : 288;
-  const navbarHeight = 64; // px (matches Navbar h-16)
+  const navbarHeight = 64; // px
 
   return (
     <div className="flex min-h-screen bg-gray-50">
@@ -71,57 +68,49 @@ export default function LiveView() {
         {/* Navbar */}
         <Navbar userEmail={user?.email} />
 
-        {/* Camera grid + Alert card */}
-        <div className="flex flex-1 overflow-hidden">
-          {/* Camera Grid */}
+        {/* Camera grid */}
+        <div
+          className="flex-1 overflow-auto p-4 transition-all duration-300"
+          style={{
+            marginLeft: sidebarWidth,
+            paddingTop: navbarHeight,
+            marginRight: alertCollapsed ? 64 : 288, // just a margin to prevent overlap
+          }}
+        >
           <div
-            className="overflow-auto p-4 transition-all duration-300"
+            className="grid gap-6 justify-center"
             style={{
-              marginLeft: sidebarWidth,
-              marginRight: alertWidth,
-              paddingTop: navbarHeight, // prevents overlap with navbar
+              gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
             }}
           >
-            <div
-              className="grid gap-6 justify-center"
-              style={{
-                gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-              }}
-            >
-              {cameras.length === 0 ? (
-                <div className="col-span-full flex justify-center text-gray-400 italic">
-                  No cameras added yet
-                </div>
-              ) : (
-                cameras.map((cam) => (
-                  <CameraFeed
-                    key={cam.id}
-                    src={cam.src}
-                    name={cam.name}
-                    status={cam.status}
-                    onDelete={() => handleDeleteCamera(cam.id)}
-                  />
-                ))
-              )}
-            </div>
-          </div>
-
-          {/* Right Panel: AlertCard */}
-          <div
-            className="flex-shrink-0 transition-all duration-300"
-            style={{ width: alertWidth }}
-          >
-            <AlertCard
-              totalAlerts={totalAlerts}
-              activeCameras={activeCameras}
-              currentAlerts={currentAlerts}
-              onAddCameraClick={() => setShowModal(true)}
-              collapsed={alertCollapsed}
-              toggleCollapse={() => setAlertCollapsed(!alertCollapsed)}
-            />
+            {cameras.length === 0 ? (
+              <div className="col-span-full flex justify-center text-gray-400 italic">
+                No cameras added yet
+              </div>
+            ) : (
+              cameras.map((cam) => (
+                <CameraFeed
+                  key={cam.id}
+                  src={cam.src}
+                  name={cam.name}
+                  status={cam.status}
+                  onDelete={() => handleDeleteCamera(cam.id)}
+                />
+              ))
+            )}
           </div>
         </div>
       </div>
+
+      {/* Fixed Right Panel: AlertCard */}
+      <AlertCard
+        totalAlerts={totalAlerts}
+        activeCameras={activeCameras}
+        currentAlerts={currentAlerts}
+        onAddCameraClick={() => setShowModal(true)}
+        collapsed={alertCollapsed}
+        toggleCollapse={() => setAlertCollapsed(!alertCollapsed)}
+      />
 
       {/* Add Camera Modal */}
       {showModal && (

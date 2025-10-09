@@ -22,7 +22,7 @@ export const CameraFeed = ({ src, name, status, onDelete }) => {
 
           {/* Camera name top-right (hide on hover) */}
           <span
-            className="absolute top-2 right-2 mr-8 px-2 py-1 rounded bg-black bg-opacity-30 text-white text-sm font-semibold z-10 transition-opacity duration-200 group-hover:opacity-0"
+            className="absolute top-2 right-2 mr-8 px-2 py-1 bg-transparent text-white text-sm font-semibold z-10 transition-opacity duration-200 group-hover:opacity-0"
           >
             {name}
           </span>
