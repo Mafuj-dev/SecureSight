@@ -1,9 +1,11 @@
 // src/App.jsx
 import React, { useEffect, useState } from "react";
-import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { Sidebar } from "./components/Sidebar";
 import { Navbar } from "./components/Navbar";
 import LiveView from "./pages/LiveView";
+import Analytics from "./pages/Analytics";
+import Alerts from "./pages/Alerts";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 import ForgotPassword from "./components/ForgotPassword";
@@ -48,7 +50,7 @@ export default function App() {
       {user ? (
         // Logged in → main dashboard layout
         <div className="flex min-h-screen bg-gray-900 text-white">
-          <Sidebar setActivePage={() => {}} activePage="live-view" />
+          <Sidebar activePage={window.location.pathname} /> {/* Highlight active page */}
           <div className="flex-1 flex flex-col">
             <Navbar
               onLogout={async () => {
@@ -62,14 +64,10 @@ export default function App() {
             />
             <main className="flex-1 p-6 overflow-y-auto bg-gray-800 rounded-tl-2xl shadow-inner transition-all">
               <Routes>
-                <Route
-                  path="/"
-                  element={
-                    <PrivateRoute>
-                      <LiveView />
-                    </PrivateRoute>
-                  }
-                />
+                <Route path="/" element={<PrivateRoute><LiveView /></PrivateRoute>} />
+                <Route path="/live-view" element={<PrivateRoute><LiveView /></PrivateRoute>} />
+                <Route path="/analytics" element={<PrivateRoute><Analytics /></PrivateRoute>} />
+                <Route path="/alerts" element={<PrivateRoute><Alerts /></PrivateRoute>} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </main>
@@ -79,30 +77,9 @@ export default function App() {
         // Not logged in → show login/signup/forgot-password pages
         <div className="bg-gray-900 text-white min-h-screen flex flex-col items-center justify-center p-4">
           <Routes>
-            <Route
-              path="/login"
-              element={
-                <PublicRoute>
-                  <Login />
-                </PublicRoute>
-              }
-            />
-            <Route
-              path="/signup"
-              element={
-                <PublicRoute>
-                  <Signup />
-                </PublicRoute>
-              }
-            />
-            <Route
-              path="/forgot-password"
-              element={
-                <PublicRoute>
-                  <ForgotPassword />
-                </PublicRoute>
-              }
-            />
+            <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+            <Route path="/signup" element={<PublicRoute><Signup /></PublicRoute>} />
+            <Route path="/forgot-password" element={<PublicRoute><ForgotPassword /></PublicRoute>} />
             <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>
         </div>
