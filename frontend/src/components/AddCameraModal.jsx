@@ -19,7 +19,7 @@ export const AddCameraModal = ({ onAdd, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50">
+    <div className="fixed inset-0 bg-transparent backdrop-brightness-70 flex justify-center items-center z-50">
       <div className="bg-gray-800 p-6 rounded-xl w-96 shadow-2xl">
         <h2 className="text-xl font-semibold mb-4 text-center text-primary">
           Add Camera Feed

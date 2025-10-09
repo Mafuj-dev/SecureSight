@@ -2,27 +2,54 @@ export const CameraFeed = ({ src, name, status, onDelete }) => {
   const statusColor = status === "online" ? "bg-green-500" : "bg-red-500";
 
   return (
-    <div className="bg-gray-800 rounded-xl p-3 shadow-lg hover:shadow-2xl transition-all relative">
-      <button
-        onClick={onDelete}
-        className="absolute top-2 right-2 text-gray-400 hover:text-red-500 text-lg"
-        title="Remove camera"
-      >
-        ✕
-      </button>
-
-      <div className="flex justify-between items-center mb-2">
-        <h3 className="font-semibold">{name}</h3>
-        <span className={`px-2 py-1 rounded-full text-xs ${statusColor}`}>
-          {status}
-        </span>
-      </div>
-
+    <div className="relative rounded-xl shadow-lg transition-all overflow-hidden group w-full">
       {src ? (
-        <video src={src} controls autoPlay loop muted className="w-full rounded-lg" />
+        <div className="relative w-full aspect-video">
+          <video
+            src={src}
+            controls
+            autoPlay
+            loop
+            muted
+            className="rounded-xl w-full h-full object-cover"
+          />
+
+          {/* Status indicator (circle) top-left */}
+          <div
+            className={`absolute top-2 left-2 w-3 h-3 rounded-full ${statusColor}`}
+            title={status === "online" ? "Online" : "Offline"}
+          />
+
+          {/* Camera name top-right (hide on hover) */}
+          <span
+            className="absolute top-2 right-2 mr-8 px-2 py-1 rounded bg-black bg-opacity-30 text-white text-sm font-semibold z-10 transition-opacity duration-200 group-hover:opacity-0"
+          >
+            {name}
+          </span>
+
+          {/* Delete Button (show on hover) */}
+          <button
+            onClick={onDelete}
+            className="absolute top-2 right-2 text-red-900/400 hover:text-red-500 text-lg z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+            title="Remove camera"
+          >
+            ✕
+          </button>
+        </div>
       ) : (
-        <div className="aspect-video bg-gray-700 flex items-center justify-center rounded-lg">
+        <div className="aspect-video bg-gray-700 flex items-center justify-center rounded-lg relative w-full">
           <span className="text-gray-400">No camera feed</span>
+
+          {/* Status indicator */}
+          <div
+            className={`absolute top-2 left-2 w-3 h-3 rounded-full ${statusColor}`}
+            title={status === "online" ? "Online" : "Offline"}
+          />
+
+          {/* Camera name */}
+          <span className="absolute top-2 right-2 px-2 py-1 rounded bg-transparent bg-opacity-30 text-white text-sm ">
+            {name}
+          </span>
         </div>
       )}
     </div>
