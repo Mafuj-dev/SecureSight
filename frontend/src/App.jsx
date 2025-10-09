@@ -6,6 +6,7 @@ import { Navbar } from "./components/Navbar";
 import LiveView from "./pages/LiveView";
 import Analytics from "./pages/Analytics";
 import Security from "./pages/Security";
+import Settings from "./pages/Settings";
 import Alerts from "./pages/Alerts";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
@@ -120,6 +121,16 @@ export default function App() {
                     </PrivateRoute>
                   }
                 />
+
+                 <Route
+                  path="/settings"
+                  element={
+                    <PrivateRoute>
+                      <Settings sidebarWidth={sidebarWidth} navbarHeight={navbarHeight} />
+                    </PrivateRoute>
+                  }
+                />
+
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </main>
