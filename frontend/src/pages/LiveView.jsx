@@ -70,7 +70,7 @@ export default function LiveView() {
 
         {/* Camera grid */}
         <div
-          className="flex-1 overflow-auto p-4 transition-all duration-300"
+          className="flex-1 overflow-auto p-4 transition-all duration-300 z-0"
           style={{
             marginLeft: sidebarWidth,
             paddingTop: navbarHeight,

@@ -13,7 +13,7 @@ export const Navbar = ({ userEmail }) => {
   };
 
   return (
-    <header className="fixed top-0 left-0 w-full bg-gray-800 p-4 flex justify-between items-center ">
+    <header className="fixed top-0 left-0 w-full bg-gray-800 p-4 flex justify-between items-center z-50">
       {/* Branding */}
       <div className="flex items-center gap-3">
         {/* Logo (replace src with your actual logo file) */}
