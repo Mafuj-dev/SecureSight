@@ -14,42 +14,47 @@ export const Sidebar = ({ setActivePage, activePage }) => {
 
   return (
     <div
-      className={`fixed top-0 left-0 h-screen bg-gray-950 flex flex-col p-4 space-y-3 shadow-lg transition-all duration-300 ease-in-out z-50 ${
-        isExpanded ? "w-64" : "w-20"
-      }`}
+      className={`
+        bg-gray-800 text-white shadow-lg z-40
+        flex flex-col md:fixed md:left-0 md:top-[var(--navbar-height,4rem)] md:h-[calc(100vh-var(--navbar-height,4rem))]
+        md:flex-col md:w-15 md:hover:w-40 md:transition-all md:duration-300
+        fixed bottom-0 left-0 w-full flex-row justify-around md:justify-start
+      `}
       onMouseEnter={() => setIsExpanded(true)}
       onMouseLeave={() => setIsExpanded(false)}
     >
-      {/* Brand Title */}
-      <h1
-        className={`text-green-500 font-bold mb-6 tracking-wide transition-all duration-300 ${
-          isExpanded ? "text-2xl opacity-100" : "text-xl opacity-0"
-        }`}
-      >
-        {isExpanded && "SecureSight"}
-      </h1>
+      {menuItems.map((item) => {
+        const isActive = activePage === item.id;
 
-      {/* Menu Items */}
-      {menuItems.map((item) => (
-        <button
-          key={item.id}
-          onClick={() => setActivePage(item.id)}
-          className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 ${
-            activePage === item.id
-              ? "bg-green-600 text-white shadow-[0_0_15px_3px_rgba(34,197,94,0.5)]"
-              : "hover:bg-gray-800 text-gray-300"
-          }`}
-        >
-          <div className="flex items-center justify-center">{item.icon}</div>
-          <span
-            className={`whitespace-nowrap overflow-hidden transition-all duration-300 ${
-              isExpanded ? "opacity-100 w-auto" : "opacity-0 w-0"
-            }`}
+        return (
+          <button
+            key={item.id}
+            onClick={() => setActivePage(item.id)}
+            className={`
+              relative flex items-center justify-center md:justify-start gap-2 px-3 py-2 m-1 rounded-md text-sm font-medium transition-all duration-300
+              ${isActive ? "bg-green-600 text-white shadow-[0_0_15px_3px_rgba(34,197,94,0.5)] md:font-bold" : "hover:bg-gray-700 text-gray-300"}
+            `}
           >
-            {item.label}
-          </span>
-        </button>
-      ))}
+            <div
+              className={`flex items-center justify-center ${isActive ? "text-white" : "text-gray-300"}`}
+            >
+              {item.icon}
+            </div>
+            <span
+              className={`hidden md:inline-block whitespace-nowrap transition-all duration-300 ${
+                isExpanded ? "opacity-100 w-auto" : "opacity-0 w-0"
+              }`}
+            >
+              {item.label}
+            </span>
+
+            {/* Animated underline for mobile */}
+            {isActive && (
+              <span className="absolute bottom-0 left-1/4 w-1/2 h-1 bg-green-400 rounded-full md:hidden transition-all duration-300"></span>
+            )}
+          </button>
+        );
+      })}
     </div>
   );
 };

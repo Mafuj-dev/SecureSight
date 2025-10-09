@@ -1,10 +1,9 @@
 // src/App.jsx
 import React, { useEffect, useState } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { Sidebar } from "./components/Sidebar";
 import { Navbar } from "./components/Navbar";
-import Dashboard from "./pages/Dashboard";
-import VideoDetection from "./pages/VideoDetection";
+import LiveView from "./pages/LiveView";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 import ForgotPassword from "./components/ForgotPassword";
@@ -12,15 +11,22 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import { auth } from "./firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 
-// PrivateRoute component for protecting routes
+// PrivateRoute component for protecting authenticated pages
 function PrivateRoute({ children }) {
   const { user } = useAuth();
-  return user ? children : <Navigate to="/" replace />;
+  return user ? children : <Navigate to="/login" replace />;
+}
+
+// PublicRoute component to prevent logged-in users from visiting login/signup pages
+function PublicRoute({ children }) {
+  const { user } = useAuth();
+  return !user ? children : <Navigate to="/" replace />;
 }
 
 export default function App() {
   const [user, setUser] = useState(undefined); // undefined = loading, null = not logged in
 
+  // Track auth state
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser || null);
@@ -28,7 +34,7 @@ export default function App() {
     return () => unsubscribe();
   }, []);
 
-  // Loading state
+  // Loading screen
   if (user === undefined) {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-900 text-white">
@@ -42,24 +48,25 @@ export default function App() {
       {user ? (
         // Logged in → main dashboard layout
         <div className="flex min-h-screen bg-gray-900 text-white">
-          <Sidebar />
+          <Sidebar setActivePage={() => {}} activePage="live-view" />
           <div className="flex-1 flex flex-col">
-            <Navbar onLogout={() => signOut(auth)} userEmail={user?.email || ""} />
+            <Navbar
+              onLogout={async () => {
+                try {
+                  await signOut(auth);
+                } catch (err) {
+                  console.error("Logout failed:", err);
+                }
+              }}
+              userEmail={user?.email || ""}
+            />
             <main className="flex-1 p-6 overflow-y-auto bg-gray-800 rounded-tl-2xl shadow-inner transition-all">
               <Routes>
                 <Route
                   path="/"
                   element={
                     <PrivateRoute>
-                      <Dashboard />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  path="/video-detection"
-                  element={
-                    <PrivateRoute>
-                      <VideoDetection />
+                      <LiveView />
                     </PrivateRoute>
                   }
                 />
@@ -69,13 +76,34 @@ export default function App() {
           </div>
         </div>
       ) : (
-        // Not logged in → show login/signup/reset routes
-        <div className="bg-gray-900 text-white min-h-screen flex flex-col items-center justify-center">
+        // Not logged in → show login/signup/forgot-password pages
+        <div className="bg-gray-900 text-white min-h-screen flex flex-col items-center justify-center p-4">
           <Routes>
-            <Route path="/" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route
+              path="/login"
+              element={
+                <PublicRoute>
+                  <Login />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/signup"
+              element={
+                <PublicRoute>
+                  <Signup />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/forgot-password"
+              element={
+                <PublicRoute>
+                  <ForgotPassword />
+                </PublicRoute>
+              }
+            />
+            <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>
         </div>
       )}
