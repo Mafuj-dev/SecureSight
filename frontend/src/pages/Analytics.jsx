@@ -1,8 +1,8 @@
 // src/pages/Analytics.jsx
 import React, { useState } from "react";
-import { BarChart2, PieChart, Activity, Monitor } from "lucide-react";
+import { BarChart2, Activity, Monitor } from "lucide-react";
 
-export default function Analytics() {
+export default function Analytics({ sidebarWidth = 60, navbarHeight = 64 }) {
   const [summaryData] = useState([
     { title: "Total Cameras", value: 12, color: "green", icon: <Monitor className="text-green-500" size={24} /> },
     { title: "Active Alerts", value: 5, color: "red", icon: <Activity className="text-red-500" size={24} /> },
@@ -16,7 +16,15 @@ export default function Analytics() {
   ]);
 
   return (
-    <div className="flex-1 p-6 bg-gray-800 text-white rounded-tl-2xl shadow-inner overflow-y-auto">
+    <div
+      className="flex-1 overflow-auto bg-gray-800 text-white transition-all duration-300"
+      style={{
+        marginLeft: sidebarWidth,
+        paddingTop: navbarHeight,
+        paddingRight: 24,
+        paddingLeft: 24,
+      }}
+    >
       {/* Page Header */}
       <h1 className="text-3xl font-bold mb-6">Analytics Dashboard</h1>
 

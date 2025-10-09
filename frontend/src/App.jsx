@@ -13,13 +13,13 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import { auth } from "./firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 
-// PrivateRoute component for protecting authenticated pages
+// PrivateRoute component
 function PrivateRoute({ children }) {
   const { user } = useAuth();
   return user ? children : <Navigate to="/login" replace />;
 }
 
-// PublicRoute component to prevent logged-in users from visiting login/signup pages
+// PublicRoute component
 function PublicRoute({ children }) {
   const { user } = useAuth();
   return !user ? children : <Navigate to="/" replace />;
@@ -27,6 +27,8 @@ function PublicRoute({ children }) {
 
 export default function App() {
   const [user, setUser] = useState(undefined); // undefined = loading, null = not logged in
+  const [sidebarExpanded, setSidebarExpanded] = useState(false); // Sidebar state
+  const navbarHeight = 64; // px
 
   // Track auth state
   useEffect(() => {
@@ -45,13 +47,23 @@ export default function App() {
     );
   }
 
+  const sidebarWidth = sidebarExpanded ? 160 : 60;
+
   return (
     <AuthProvider>
       {user ? (
         // Logged in → main dashboard layout
         <div className="flex min-h-screen bg-gray-900 text-white">
-          <Sidebar activePage={window.location.pathname} /> {/* Highlight active page */}
-          <div className="flex-1 flex flex-col">
+          {/* Sidebar */}
+          <Sidebar
+            activePage={window.location.pathname}
+            isExpanded={sidebarExpanded}
+            setIsExpanded={setSidebarExpanded}
+          />
+
+          {/* Main content */}
+          <div className="flex-1 flex flex-col transition-all duration-300">
+            {/* Navbar */}
             <Navbar
               onLogout={async () => {
                 try {
@@ -62,12 +74,42 @@ export default function App() {
               }}
               userEmail={user?.email || ""}
             />
-            <main className="flex-1 p-6 overflow-y-auto bg-gray-800 rounded-tl-2xl shadow-inner transition-all">
+
+            {/* Page content */}
+            <main className="flex-1 overflow-y-auto transition-all duration-300">
               <Routes>
-                <Route path="/" element={<PrivateRoute><LiveView /></PrivateRoute>} />
-                <Route path="/live-view" element={<PrivateRoute><LiveView /></PrivateRoute>} />
-                <Route path="/analytics" element={<PrivateRoute><Analytics /></PrivateRoute>} />
-                <Route path="/alerts" element={<PrivateRoute><Alerts /></PrivateRoute>} />
+                <Route
+                  path="/"
+                  element={
+                    <PrivateRoute>
+                      <LiveView sidebarWidth={sidebarWidth} navbarHeight={navbarHeight} />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path="/live-view"
+                  element={
+                    <PrivateRoute>
+                      <LiveView sidebarWidth={sidebarWidth} navbarHeight={navbarHeight} />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path="/analytics"
+                  element={
+                    <PrivateRoute>
+                      <Analytics sidebarWidth={sidebarWidth} navbarHeight={navbarHeight} />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path="/alerts"
+                  element={
+                    <PrivateRoute>
+                      <Alerts sidebarWidth={sidebarWidth} navbarHeight={navbarHeight} />
+                    </PrivateRoute>
+                  }
+                />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </main>

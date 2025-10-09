@@ -73,7 +73,7 @@ export default function LiveView() {
           className="flex-1 overflow-auto p-4 transition-all duration-300 z-0"
           style={{
             marginLeft: sidebarWidth,
-            paddingTop: navbarHeight,
+            paddingTop: navbarHeight+10,
             marginRight: alertCollapsed ? 64 : 288, // just a margin to prevent overlap
           }}
         >
