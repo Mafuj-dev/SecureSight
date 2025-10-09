@@ -159,9 +159,27 @@ export default function Security({ sidebarWidth = 60, navbarHeight = 64 }) {
                     <td className="px-4 py-3 text-gray-900">{cam.name}</td>
                     <td className="px-4 py-3 text-gray-900">{cam.gps}</td>
                     <td className="px-4 py-3 text-gray-900 flex flex-col gap-1">
-                      <span>Weapon: {cam.detection.weapon ? "✔" : "✖"}</span>
-                      <span>Scuffle: {cam.detection.scuffle ? "✔" : "✖"}</span>
-                      <span>Stampede: {cam.detection.stampede ? "✔" : "✖"}</span>
+                      <td className="px-4 py-3 text-gray-900 flex flex-col gap-1">
+                        <span>
+                            Weapon:{" "}
+                            <span className={cam.detection.weapon ? "text-green-500 font-bold" : "text-red-500 font-bold"}>
+                            {cam.detection.weapon ? "✔" : "✖"}
+                            </span>
+                        </span>
+                        <span>
+                            Scuffle:{" "}
+                            <span className={cam.detection.scuffle ? "text-green-500 font-bold" : "text-red-500 font-bold"}>
+                            {cam.detection.scuffle ? "✔" : "✖"}
+                            </span>
+                        </span>
+                        <span>
+                            Stampede:{" "}
+                            <span className={cam.detection.stampede ? "text-green-500 font-bold" : "text-red-500 font-bold"}>
+                            {cam.detection.stampede ? "✔" : "✖"}
+                            </span>
+                        </span>
+                        </td>
+
                     </td>
                     <td className="px-4 py-3">
                       <button
